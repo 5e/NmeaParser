@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="SerialPortDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.Desktop.cs" />
+    <Compile Include="SerialPortFixer.cs" />
     <Compile Include="TypedEventHandler.cs" />
   </ItemGroup>
   <ItemGroup>

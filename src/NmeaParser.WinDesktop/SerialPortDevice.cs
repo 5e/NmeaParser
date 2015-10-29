@@ -15,30 +15,32 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.IO.Ports;
 using System.Threading.Tasks;
 
 namespace NmeaParser
 {
 	public class SerialPortDevice : NmeaDevice
 	{
-		private System.IO.Ports.SerialPort m_port;
+        private const int VistaVersion = 6;
+        private SerialPort m_port;
 
-		public SerialPortDevice(System.IO.Ports.SerialPort port)
+		public SerialPortDevice(SerialPort port)
 		{
-			m_port = port;
+            m_port = port;
+
+            if (Environment.OSVersion.Version.Major <= VistaVersion)
+                SerialPortFixer.Execute(port.PortName);
+        }
+
+		protected override Task<Stream> OpenStreamAsync()
+		{
+            m_port.Open();
+			return TaskEx.FromResult<Stream>(m_port.BaseStream);
 		}
 
-		protected override Task<System.IO.Stream> OpenStreamAsync()
-		{
-			m_port.Open();
-			return TaskEx.FromResult<System.IO.Stream>(m_port.BaseStream);
-		}
-
-		protected override Task CloseStreamAsync(System.IO.Stream stream)
+		protected override Task CloseStreamAsync(Stream stream)
 		{
 			m_port.Close();
 			return TaskEx.FromResult(true);
