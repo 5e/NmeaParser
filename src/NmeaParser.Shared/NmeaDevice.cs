@@ -72,7 +72,7 @@ namespace NmeaParser
                         }
                         catch (Exception e)
                         {
-                            if (e is TaskCanceledException)
+                            if (e is TaskCanceledException || e is IOException)
                                 throw;
                             Logger.Warn(e);
                         }
