@@ -18,7 +18,6 @@ using System;
 using System.IO;
 using System.IO.Ports;
 using System.Threading.Tasks;
-using NLog;
 
 namespace NmeaParser
 {
