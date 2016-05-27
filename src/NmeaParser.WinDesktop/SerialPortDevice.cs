@@ -18,20 +18,25 @@ using System;
 using System.IO;
 using System.IO.Ports;
 using System.Threading.Tasks;
+using NLog;
 
 namespace NmeaParser
 {
 	public class SerialPortDevice : NmeaDevice
 	{
-        private const int VistaVersion = 6;
+        private const int VistaMajorVersion = 6;
+        private const int VistaMinorVersion = 0;
         private SerialPort m_port;
 
 		public SerialPortDevice(SerialPort port)
 		{
             m_port = port;
-
-            if (Environment.OSVersion.Version.Major <= VistaVersion)
+            
+            if (Environment.OSVersion.Version.Major < VistaMajorVersion || 
+                (Environment.OSVersion.Version.Major == VistaMajorVersion && Environment.OSVersion.Version.Minor <= VistaMinorVersion))
+		    {
                 SerialPortFixer.Execute(port.PortName);
+            }
         }
 
 		protected override Task<Stream> OpenStreamAsync()
