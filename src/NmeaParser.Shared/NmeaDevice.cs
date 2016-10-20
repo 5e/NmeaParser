@@ -121,21 +121,22 @@ namespace NmeaParser
         protected void OnData(byte[] data)
         {
             var nmea = Encoding.UTF8.GetString(data, 0, data.Length);
-            string line = null;
             lock (m_lockObject)
             {
                 m_message += nmea;
 
                 var lineEnd = m_message.IndexOf("\n");
-                if (lineEnd > -1)
+                while (lineEnd > -1)
                 {
-                    line = m_message.Substring(0, lineEnd).Trim();
+                    var line = m_message.Substring(0, lineEnd).Trim();
+
+                    if (!string.IsNullOrEmpty(line))
+                        ProcessMessage(line);
+
                     m_message = m_message.Substring(lineEnd + 1);
+                    lineEnd = m_message.IndexOf("\n");
                 }
             }
-
-            if (!string.IsNullOrEmpty(line))
-                ProcessMessage(line);
         }
 
         private void ProcessMessage(string p)
