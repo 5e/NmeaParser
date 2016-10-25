@@ -70,11 +70,9 @@ namespace NmeaParser
                         {
                             readCount = await stream.ReadAsync(buffer, 0, 1024, token).ConfigureAwait(false);
                         }
-                        catch (Exception e)
+                        catch
                         {
-                            if (e is TaskCanceledException || e is IOException)
-                                throw;
-                            Logger.Warn(e);
+                            // dev/null
                         }
 
                         if (readCount > 0)
