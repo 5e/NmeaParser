@@ -122,13 +122,16 @@ namespace NmeaParser
                     _udp.Client.Shutdown(SocketShutdown.Both);
                     _udp.Client.Close();
                 }
-                return TaskEx.FromResult(true);
             }
             catch (Exception e)
             {
-                Logger.Error(e);
-                throw;
+                if (!(e is ObjectDisposedException) && !(e is SocketException))
+                {
+                    Logger.Error(e);
+                    throw;
+                }
             }
+            return TaskEx.FromResult(true);
         }
 
         protected override void Dispose(bool force)
