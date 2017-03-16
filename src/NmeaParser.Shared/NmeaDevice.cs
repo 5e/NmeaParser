@@ -36,11 +36,9 @@ namespace NmeaParser
         private Stream m_stream;
         private CancellationTokenSource m_cts;
         protected TaskCompletionSource<bool> closeTask;
-        private bool logLocation;
-        private string debugFilePath = "gps.txt";
 
         protected NmeaDevice()
-        { }
+        {}
 
         public async Task OpenAsync()
         {
@@ -53,12 +51,6 @@ namespace NmeaParser
             m_stream = await OpenStreamAsync();
             StartParser();
             MultiPartMessageCache.Clear();
-        }
-
-        public void SetLogging(bool log)
-        {
-            Logger.Info("Set logging to {0}", log);
-            logLocation = log;
         }
 
         protected virtual void StartParser()
@@ -127,13 +119,7 @@ namespace NmeaParser
         protected void OnData(byte[] data)
         {
             var nmea = Encoding.UTF8.GetString(data, 0, data.Length);
-            if (logLocation)
-            {
-                using (StreamWriter file = File.AppendText(debugFilePath))
-                {
-                    file.WriteLine("{0} nmea: {1}", DateTime.Now, nmea);
-                }
-            }
+
             lock (m_lockObject)
             {
                 m_message += nmea;
@@ -204,8 +190,11 @@ namespace NmeaParser
 
         protected void RaiseMessageReceived(object sender, NmeaMessageReceivedEventArgs args)
         {
-            if (MessageReceived != null)
-                MessageReceived(this, args);
+            if (MessageReceived == null)
+                return;
+
+            MessageReceived(this, args);
+            Logger.Info(args.Message);
         }
 
         private Dictionary<string, Dictionary<int, NmeaMessage>> MultiPartMessageCache
