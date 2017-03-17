@@ -110,9 +110,12 @@ namespace NmeaParser.Nmea
 
 		public override string ToString()
 		{
-            var type = MessageType ?? "null";
-            var parts = MessageParts ?? new[] { string.Empty };
-            return string.Format("${0},{1}", type, string.Join(",", parts));
+			var type = MessageType ?? "null";
+			var parts = MessageParts;
+
+			return parts != null
+				? string.Format("${0},{1}", type, string.Join(",", parts))
+				: string.Format("${0}", type);
 		}
 
 		internal static double StringToLatitude(string value, string ns)
