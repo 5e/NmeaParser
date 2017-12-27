@@ -22,18 +22,24 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using NLog;
 using NmeaParser.Nmea;
 
 namespace NmeaParser
 {
     public abstract class NmeaDevice : IDisposable
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private object m_lockObject = new object();
         private string m_message = "";
         private Stream m_stream;
         private CancellationTokenSource m_cts;
         protected TaskCompletionSource<bool> closeTask;
-        
+
+        protected NmeaDevice()
+        {}
+
         public async Task OpenAsync()
         {
             lock (m_lockObject)
@@ -188,6 +194,7 @@ namespace NmeaParser
                 return;
 
             MessageReceived(this, args);
+            Logger.Info(args.Message);
         }
 
         private Dictionary<string, Dictionary<int, NmeaMessage>> MultiPartMessageCache
